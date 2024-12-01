@@ -1,1 +1,85 @@
+[2024-11-29 16:51:52] Server starting up...
+[2024-11-29 16:51:52] Auctions initialized: 2 items
+[2024-11-29 16:51:52] Server is running on port 8080
+[2024-11-29 16:52:05] New client connected. Client ID: 0
+[2024-11-29 16:52:12] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 16:52:12] New highest bid: Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 16:52:28] New client connected. Client ID: 1
+[2024-11-29 16:53:14] Received bid from Client 1: Auction ID 1, Amount 70.00
+[2024-11-29 16:53:14] New highest bid: Auction ID 1, Amount 70.00, Client 1
+[2024-11-29 16:53:25] Received bid from Client 0: Auction ID 1, Amount 70.00
+[2024-11-29 16:53:25] Invalid bid (too low): Auction ID 1, Amount 70.00, Client 0
+[2024-11-29 16:56:39] Received bid from Client 0: Auction ID 1, Amount 72.00
+[2024-11-29 16:56:39] New highest bid: Auction ID 1, Amount 72.00, Client 0
+[2024-11-29 17:06:00] Server starting up...
+[2024-11-29 17:06:00] Auctions initialized: 2 items
+[2024-11-29 17:06:00] Bind failed
+[2024-11-29 17:07:12] Server starting up...
+[2024-11-29 17:07:12] Auctions initialized: 2 items
+[2024-11-29 17:07:12] Server is running on port 8080
+[2024-11-29 17:07:22] New client connected. Client ID: 0
+[2024-11-29 17:13:47] Received bid from Client 0: Auction ID 1, Amount 55.00
+[2024-11-29 17:13:47] Invalid bid (below minimum increase): Auction ID 1, Amount 55.00, Client 0
+[2024-11-29 17:14:00] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 17:14:00] New highest bid: Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 17:26:34] Server starting up...
+[2024-11-29 17:26:34] Auctions initialized: 2 items
+[2024-11-29 17:26:34] Bind failed
+[2024-11-29 17:26:38] Server starting up...
+[2024-11-29 17:26:38] Auctions initialized: 2 items
+[2024-11-29 17:26:38] Bind failed
+[2024-11-29 17:27:31] Server starting up...
+[2024-11-29 17:27:31] Auctions initialized: 2 items
+[2024-11-29 17:27:31] Server is running on port 8080
+[2024-11-29 17:27:40] New client connected. Client ID: 0
+[2024-11-29 17:27:46] Received bid from Client 0: Auction ID 0, Amount 0.00
+[2024-11-29 17:34:46] Server starting up...
+[2024-11-29 17:34:46] Auctions initialized: 2 items
+[2024-11-29 17:34:46] Bind failed
+[2024-11-29 17:35:55] Server starting up...
+[2024-11-29 17:35:55] Auctions initialized: 2 items
+[2024-11-29 17:35:55] Server is running on port 8080
+[2024-11-29 17:36:03] New client connected. Client ID: 0
+[2024-11-29 17:36:13] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 17:36:13] New highest bid: Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 17:36:16] Client 0 requested current auction list
+[2024-11-29 17:36:38] New client connected. Client ID: 1
+[2024-11-29 17:37:11] Received bid from Client 0: Auction ID 2, Amount 650.00
+[2024-11-29 17:37:11] New highest bid: Auction ID 2, Amount 650.00, Client 0
+[2024-11-29 17:37:19] Client 1 requested current auction list
+[2024-11-29 18:08:35] Server starting up...
+[2024-11-29 18:08:35] Auctions initialized
+[2024-11-29 18:08:35] Server is running and listening for connections...
+[2024-11-29 18:08:43] pc921
+[2024-11-29 18:09:25] Bid placed successfully! You're now the highest bidder for Auction 1.
+
+[2024-11-29 18:09:36] Bid placed successfully! You're now the highest bidder for Auction 2.
+
+[2024-11-29 18:17:29] Server starting up...
+[2024-11-29 18:17:29] Auctions initialized: 2 items
+[2024-11-29 18:17:29] Server is running and listening for connections...
+[2024-11-29 18:17:38] New client connected. Client ID: 0
+[2024-11-29 18:17:38] Received bid from Client 0: Auction ID 0, Amount 0.00
+[2024-11-29 18:17:38] Invalid bid received
+[2024-11-29 18:17:48] Client 0 requested current auction list
+[2024-11-29 18:18:04] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 18:18:04] New highest bid: Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 18:18:06] Client 0 requested current auction list
+[2024-11-29 18:18:14] Client 0 requested current auction list
+[2024-11-29 18:18:17] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 18:18:17] Invalid bid (below minimum increase): Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 18:18:17] Invalid bid received
+[2024-11-29 18:18:17] Client 0 requested current auction list
+[2024-11-29 18:18:23] Received bid from Client 0: Auction ID 2, Amount 800.00
+[2024-11-29 18:18:23] New highest bid: Auction ID 2, Amount 800.00, Client 0
+[2024-11-29 18:19:06] Server starting up...
+[2024-11-29 18:19:06] Auctions initialized: 2 items
+[2024-11-29 18:19:06] Server is running and listening for connections...
+[2024-11-29 18:19:11] New client connected. Client ID: 0
+[2024-11-29 18:19:14] Received bid from Client 0: Auction ID 1, Amount 0.00
+[2024-11-29 18:19:14] Invalid bid (below minimum increase): Auction ID 1, Amount 0.00, Client 0
+[2024-11-29 18:19:14] Invalid bid received
+[2024-11-29 18:19:17] Received bid from Client 0: Auction ID 1, Amount 60.00
+[2024-11-29 18:19:17] New highest bid: Auction ID 1, Amount 60.00, Client 0
+[2024-11-29 18:19:19] Client 0 requested current auction list
 
