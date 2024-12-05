@@ -1,3 +1,5 @@
+//client.c
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,16 +13,23 @@
 
 FILE *log_file;
 
+void clear_stdin() {
+    int c;
+    while ((c = getchar()) != '\n' && c != EOF);
+}
+
 void log_message(const char *message) {
     time_t now;
     time(&now);
     char timestamp[64];
     strftime(timestamp, sizeof(timestamp), "%Y-%m-%d %H:%M:%S", localtime(&now));
     
+    //Writing in to file to log messsage with timestamp
     fprintf(log_file, "[%s] %s\n", timestamp, message);
     fflush(log_file);
 }
 
+//This method will display just after connection with server
 void display_help() {
     printf("\nBidding Instructions:\n");
     printf("1. Enter the auction ID and bid amount in format: <auction_id> <amount>\n");
@@ -29,6 +38,7 @@ void display_help() {
     printf("4. Enter 'q' to quit\n\n");
 }
 
+//main function
 int main() {
     log_file = fopen("client_log.txt", "a");
     if (log_file == NULL) {
@@ -42,6 +52,7 @@ int main() {
     struct sockaddr_in server_addr;
     char buffer[BUFFER_SIZE];
     char log_buffer[LOG_BUFFER_SIZE];
+    char username[50], password[50];
 
     sock = socket(AF_INET, SOCK_STREAM, 0);
     if (sock < 0) {
@@ -63,6 +74,50 @@ int main() {
 
     log_message("Connected to the auction server");
     printf("Connected to the auction server.\n");
+
+    // Authentication process
+    for (int attempts = 0; attempts < 3; attempts++) {
+        memset(buffer, 0, BUFFER_SIZE);
+
+        // Receive prompt for username
+        recv(sock, buffer, BUFFER_SIZE, 0);
+        printf("%s", buffer);
+        fgets(username, sizeof(username), stdin);
+        username[strcspn(username, "\n")] = 0; // Remove trailing newline
+        send(sock, username, strlen(username), 0);
+
+        char message[BUFFER_SIZE];
+        snprintf(message, sizeof(message), "Attempt %d: Username entered: %s", attempts + 1, username);
+        log_message(message);
+
+        memset(buffer, 0, BUFFER_SIZE);
+
+        // Receive prompt for password
+        recv(sock, buffer, BUFFER_SIZE, 0);
+        printf("%s", buffer);
+        fgets(password, sizeof(password), stdin);
+        password[strcspn(password, "\n")] = 0; // Remove trailing newline
+        send(sock, password, strlen(password), 0);
+
+        // Receive authentication result
+        memset(buffer, 0, BUFFER_SIZE);
+        recv(sock, buffer, BUFFER_SIZE, 0);
+        printf("%s", buffer);
+
+        snprintf(message, sizeof(message), "Attempt %d: Authentication result: %s", attempts + 1, buffer);
+        log_message(message);
+
+        if (strstr(buffer, "successful")) {
+            log_message("Authentication successful.");
+            break; // Authentication succeeded
+        } else if (attempts == 2) {
+            log_message("Authentication failed after 3 attempts. Disconnecting.");
+            printf("Too many failed attempts. Disconnecting...\n");
+            close(sock);
+            return 0;
+        }
+    }
+
     display_help();
 
     int bytes_received = recv(sock, buffer, BUFFER_SIZE, 0);
@@ -77,6 +132,7 @@ int main() {
         perror("Error receiving initial auction list from server");
     }
 
+    //
     while (1) {
         printf("\nEnter auction ID and bid amount (or 'ls' to list current auctions, 'q' to quit): ");
         fgets(buffer, BUFFER_SIZE, stdin);
@@ -111,6 +167,7 @@ int main() {
             continue;
         }
 
+        //3rd option of sending bid with auction ID
         snprintf(log_buffer, LOG_BUFFER_SIZE, "Sending bid: %s", buffer);
         log_message(log_buffer);
 
@@ -120,6 +177,7 @@ int main() {
             break;
         }
 
+        //receiving response from server
         bytes_received = recv(sock, buffer, BUFFER_SIZE, 0);
         if (bytes_received > 0) {
             buffer[bytes_received] = '\0';
