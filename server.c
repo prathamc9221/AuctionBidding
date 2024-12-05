@@ -1,4 +1,4 @@
-// server.c
+//server.c
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,10 +24,23 @@ typedef struct {
     int highest_bidder;
 } Auction;
 
-Auction auctions[3];
-int num_auctions = 3;
+Auction auctions[5];
+int num_auctions = 5;
 int num_clients = 0;
 pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+
+// Hardcoded user credentials
+typedef struct {
+    char username[50];
+    char password[50];
+} User;
+
+User users[] = {
+    {"user1", "pass1"},
+    {"user2", "pass2"},
+    {"admin", "admin123"}
+};
+int num_users = sizeof(users) / sizeof(users[0]);
 
 void log_message(const char *message) {
     time_t now;
@@ -52,14 +65,54 @@ void initialize_auctions() {
     auctions[1].current_bid = 500.0;
     auctions[1].highest_bidder = -1;
 
-    auctions[2].auction_id = 2;
-    strcpy(auctions[2].item_name, "Advanture 360");
-    auctions[2].current_bid = 500.0;
+    auctions[2].auction_id = 3;
+    strcpy(auctions[2].item_name, "Adventure 360");
+    auctions[2].current_bid = 200.0;
     auctions[2].highest_bidder = -1;
+
+    auctions[3].auction_id = 4;
+    strcpy(auctions[3].item_name, "Yamaha 340");
+    auctions[3].current_bid = 180.0;
+    auctions[3].highest_bidder = -1;
+
+    auctions[4].auction_id = 5;
+    strcpy(auctions[4].item_name, "Tata Power");
+    auctions[4].current_bid = 350.0;
+    auctions[4].highest_bidder = -1;
     
     char log_buffer[LOG_BUFFER_SIZE];
     snprintf(log_buffer, LOG_BUFFER_SIZE, "Auctions initialized: %d items", num_auctions);
     log_message(log_buffer);
+}
+
+int authenticate_client(int client_socket) {
+    char buffer[BUFFER_SIZE];
+    char username[50], password[50];
+    
+    // Request username
+    send(client_socket, "Enter username: ", 17, 0);
+    int bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+    if (bytes_received <= 0) return 0;
+    buffer[bytes_received] = '\0';
+    strcpy(username, buffer);
+
+    // Request password
+    send(client_socket, "Enter password: ", 17, 0);
+    bytes_received = recv(client_socket, buffer, BUFFER_SIZE, 0);
+    if (bytes_received <= 0) return 0;
+    buffer[bytes_received] = '\0';
+    strcpy(password, buffer);
+
+    // Check credentials
+    for (int i = 0; i < num_users; i++) {
+        if (strcmp(users[i].username, username) == 0 && strcmp(users[i].password, password) == 0) {
+            send(client_socket, "Authentication successful\n", 26, 0);
+            return 1;
+        }
+    }
+
+    send(client_socket, "Authentication failed. Disconnecting...\n", 40, 0);
+    return 0;
 }
 
 void *client_handler(void *arg) {
@@ -67,6 +120,13 @@ void *client_handler(void *arg) {
     int client_id = num_clients++;
     char log_buffer[LOG_BUFFER_SIZE];
     
+    if (!authenticate_client(client_socket)) {
+        snprintf(log_buffer, LOG_BUFFER_SIZE, "Authentication failed for client");
+        log_message(log_buffer);
+        close(client_socket);
+        return NULL;
+    }
+
     snprintf(log_buffer, LOG_BUFFER_SIZE, "New client connected. Client ID: %d", client_id);
     log_message(log_buffer);
 
@@ -179,64 +239,57 @@ void *client_handler(void *arg) {
     return NULL;
 }
 
-
 int main() {
-    int server_socket, *client_socket;
+    int server_socket, client_socket;
     struct sockaddr_in server_addr, client_addr;
-    socklen_t client_len = sizeof(client_addr);
+    socklen_t addr_size;
 
     log_file = fopen("server_log.txt", "a");
-    if (!log_file) {
-        perror("Failed to open log file");
-        return EXIT_FAILURE;
+    if (log_file == NULL) {
+        perror("Unable to open log file");
+        exit(EXIT_FAILURE);
     }
 
-    log_message("Server starting up...");
-
     initialize_auctions();
-    pthread_mutex_init(&lock, NULL);
 
-    server_socket = socket(AF_INET, SOCK_STREAM, 0);
-    if (server_socket < 0) {
-        log_message("Socket creation failed");
-        perror("Socket creation failed");
-        return EXIT_FAILURE;
+    if ((server_socket = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("Socket failed");
+        exit(EXIT_FAILURE);
     }
 
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(PORT);
     server_addr.sin_addr.s_addr = INADDR_ANY;
+    server_addr.sin_port = htons(PORT);
 
     if (bind(server_socket, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
-        log_message("Socket bind failed");
-        perror("Socket bind failed");
-        return EXIT_FAILURE;
+        perror("Bind failed");
+        exit(EXIT_FAILURE);
     }
 
     if (listen(server_socket, MAX_CLIENTS) < 0) {
-        log_message("Socket listen failed");
-        perror("Socket listen failed");
-        return EXIT_FAILURE;
+        perror("Listen failed");
+        exit(EXIT_FAILURE);
     }
 
-    log_message("Server is running and listening for connections...");
+    printf("Server started on port %d\n", PORT);
+    log_message("Server started");
 
     while (1) {
-        client_socket = malloc(sizeof(int));
-        if ((*client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &client_len)) < 0) {
-            log_message("Failed to accept client connection");
+        addr_size = sizeof(client_addr);
+        if ((client_socket = accept(server_socket, (struct sockaddr *)&client_addr, &addr_size)) < 0) {
             perror("Accept failed");
-            free(client_socket);
             continue;
         }
 
-        pthread_t thread;
-        pthread_create(&thread, NULL, client_handler, client_socket);
-        pthread_detach(thread);
+        pthread_t thread_id;
+        if (pthread_create(&thread_id, NULL, client_handler, &client_socket) != 0) {
+            perror("Thread creation failed");
+            continue;
+        }
+
+        pthread_detach(thread_id);
     }
 
     fclose(log_file);
-    close(server_socket);
-    pthread_mutex_destroy(&lock);
     return 0;
 }
